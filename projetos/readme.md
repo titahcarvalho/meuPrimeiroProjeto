@@ -1,0 +1,1 @@
+Esses códigos fazem parte de uma série de aulas do curso da plataforma EuCurso. Ao realizar as aulas sobre Introdução a Lógica de Programação acompanhei as intruções e raciocínio do professor para a estruturação de meu próprio projeto. 

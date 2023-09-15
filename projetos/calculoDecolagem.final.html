@@ -1,0 +1,84 @@
+<<!DOCTYPE html>
+<html>
+	<body>
+		<script>
+
+			let ciclo = () => {
+				if (combustivel > propulsão) {
+					velocidade += propulsão;
+					combustivel -= propulsão;
+				}
+				else {
+					combustivel = 0;
+
+			}
+			velocidade -= 10;
+			altitude += velocidade;
+			if(velocidade > estrutura) {
+				alert("Casco rompido. Nave explodiu");
+				window.clearInterval(intervalo);
+				} else if ( altitude < 0 ) {
+					alert("Nave se chocou com a terra!");
+					if (altitudeMaxima > 10000) {
+						alert("Vitória! Você passou de 10.000");
+					}
+					window.clearInterval(intervalo);
+				}
+				if (altitude > altitudeMaxima) {
+					altitudeMaxima = altitude; 
+				}
+				document.getElementById("idTempo").value = tempo++;
+				document.getElementById("idAltitude").value = altitude;
+				document.getElementById("idAltitudeMaxima").value = altitudeMaxima;
+				document.getElementById("idVelocidade").value = velocidade;
+				document.getElementById("idCombustivelRestante").value = combustivel;
+				document.getElementById("idEstrutura").value = estrutura;
+			}
+
+		   let decolar = () => {
+		   		altitudeMaxima = 0;
+		   		velocidade = 0;
+		   		aceleração = 0;
+		   		altitude = 0;
+		   		tempo = 1;
+
+		   		combustivel = +document.getElementById("idCombustivel").value;
+				propulsão = +document.getElementById("idPropulsão").value;
+				estrutura = +document.getElementById("idEstrutura").value;
+
+				if (combustivel+propulsão+estrutura > 1000) {
+					alert("Você não pode distribuir mais de 1000 pontos entre os três itens");
+				} else {
+					intervalo = window.setInterval(ciclo,200);
+				}
+
+			}
+
+			let altitudeMaxima = 0;
+			let velocidade = 0;
+			let aceleração = 0;
+			let altitude = 0;
+			let tempo = 1;
+			let combustivel;
+			let propulsão;
+			let estrutura;
+			let intervalo;
+
+
+			
+		</script>	
+
+		<p> Combustível: <input id="idCombustivel"/></p>
+		<p> Propulsão: <input id="idPropulsão"/></p>
+		<p> Estrutura: <input id="idEstrutura"/></p>
+
+		<p><button onclick="decolar()">Decolar</button></button></p> 
+
+		<p> Cronomêtro: <input id="idTempo"/></p>
+		<p> Altitude: <input id="idAltitude"/></p>
+		<p> Velocidade: <input id="idVelocidade"/></p>
+		<p> Combustível Restante: <input id="idCombustivelRestante"/></p>
+		<p> Altitude Máxima: <input id="idAltitudeMaxima"/></p>	
+			
+	</body>
+</html>

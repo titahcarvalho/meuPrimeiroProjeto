@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JOGO DO LABIRINTO</title>
+</head>
+<body>
+  <canvas id="labirinto" width="400" height="460"></canvas>
+  <script>
+    let canvas = document.getElementById("labirinto");
+    let context = canvas.getContext("2d");
+   
+    let tamanhoCelula = 10;
+    const DIREITA = 39;
+    const ESQUERDA = 37;
+    const ACIMA = 38;
+    const ABAIXO = 40;
+
+    let jogador = {
+    	x: 1,
+    	y: 1,
+    	velocidade: 0.1,
+    	direcao: 0,
+    	proximaDirecao: 0
+    };
+
+    const inicio = { x: 1, y: 1 };
+    const fim = { x: 25, y: 25 };
+    let cores = {
+      parede: "#000",   // Cor para as paredes
+      inicio: "#00f",   // Cor para o início (azul)
+      fim: "#0f0",      // Cor para o fim (verde)
+      caminho: "#fff",  // Cor para o caminho
+      jogador: "#f00"   // Cor para o jogador (vermelho)
+    };
+
+   
+    let mapa = [
+	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+	  [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+	  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+	  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+	];
+
+    function desenhaJogador () {
+    	context.fillStyle = "#f00";
+    	context.fillRect(jogador.x * tamanhoCelula, jogador.y * tamanhoCelula, tamanhoCelula, tamanhoCelula);
+    }
+
+    function desenhaLabirinto() {
+      for (let i = 0; i < mapa.length; i++) {
+        for (let j = 0; j < mapa[i].length; j++) {
+          if (mapa[i][j] === 1) {
+            context.fillStyle = "#000";
+            context.fillRect(j * tamanhoCelula, i * tamanhoCelula, tamanhoCelula, tamanhoCelula);
+           }else if (mapa[i][j] === -1) { // Valor para representar o início
+            context.fillStyle = "#00f"; // Azul para o início
+            context.fillRect(j * tamanhoCelula, i * tamanhoCelula, tamanhoCelula, tamanhoCelula);
+          } else if (mapa[i][j] === 2) { // Valor para representar o fim
+            context.fillStyle = "#0f0"; // Verde para o fim
+            context.fillRect(j * tamanhoCelula, i * tamanhoCelula, tamanhoCelula, tamanhoCelula);
+          } else {
+          	 context.fillStyle = "#fff";
+           	 context.fillRect(j * tamanhoCelula, i * tamanhoCelula, tamanhoCelula, tamanhoCelula);
+           	}
+        }
+      }
+    }
+    document.addEventListener("keydown", function(event){
+    	jogador.proximaDirecao = event.keyCode;
+    })
+
+    function possoIr(peca, direcao){
+    	if ( !Number.isInteger(peca.x))
+    		return true;
+    	if (!Number.isInteger(peca.y))
+    		return true;
+    	let x = peca.x;
+    	let y = peca.y;
+    	switch(direcao) {
+    		case DIREITA:{x++;break;}
+    		case ESQUERDA:{x--;break;}
+    		case ACIMA:{y--;break}
+    		case ABAIXO: {y++;break;}
+    	}
+    	return (mapa[y][x] ===0);
+
+    }
+    function jogadorChegouAoFim() {
+      return jogador.x === fim.x*tamanhoCelula && jogador.y === fim.y * tamanhoCelula;
+  }
+
+    function moveJogador() {
+    	if (Number.isInteger(jogador.x)&& Number.isInteger(jogador.y)) {
+    		if (possoIr(jogador, jogador.proximaDirecao)){
+    			jogador.direcao = jogador.proximaDirecao;
+    		}
+    	}
+
+    	if (possoIr(jogador, jogador.direcao)) {
+    		switch (jogador.direcao) {
+    		case DIREITA:{jogador.x += jogador.velocidade;break;}
+    		case ESQUERDA:{jogador.x -= jogador.velocidade;break;}
+    		case ACIMA:{jogador.y -= jogador.velocidade;break;}
+    		case ABAIXO:{jogador.y += jogador.velocidade;break;}
+
+    			}
+    		}
+    		jogador.x = Math.round(jogador.x*10)/10;
+    		jogador.y = Math.round(jogador.y*10)/10;
+    	
+    	if (jogadorChegouAoFim()) {
+    		alert("PARABÉNS!!! VOCÊ SOBREVIVEU AO LABIRINTO!");
+    		cancelAnimationFrame(animationFrame);
+    	}
+    }
+
+
+    function ciclo() {    
+    desenhaLabirinto();
+    desenhaJogador();
+    moveJogador();
+    requestAnimationFrame(ciclo);
+
+   }
+
+   ciclo();
+  </script>
+</body>
+</html>

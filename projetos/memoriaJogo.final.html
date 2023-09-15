@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Exemplo</title>
+  </head>
+  <body>
+    <script>
+      let exibe = () => {
+        let tableHTML = '<table border="1"><tr>';
+        
+        tableHTML += memoria2.map((e, i) => `
+          <td id="${i}">
+            ${e}
+          </td>
+        `).join('');
+        
+        tableHTML += '</tr></table>';
+        
+        document.body.innerHTML = tableHTML;
+      }
+      let click = (e) => {
+        let id = e.srcElement.id;
+        if ( memoria2[id] !== "*") return;
+
+        if (fase === 1 ) {
+          memoria2[id] = memoria1[id];
+          selecionado1 = id;
+          fase = 2;
+        } else if ( fase === 2 ) {
+          memoria2[id] = memoria1[id];
+          selecionado2 = id;
+          fase = 3;
+        } else {
+
+          if (memoria2[selecionado1] !== memoria2[selecionado2]) {
+             memoria2[selecionado1] = "*";
+             memoria2[selecionado2] = "*";
+
+          }
+          fase = 1;
+        }
+        exibe();
+          if (memoria2.every((element) => element !== '*')) {
+              alert("Parabéns, você completou o jogo da memória!!! ");
+            }
+
+      }
+
+      let fase = 1;
+      let selecionado1 = 0;
+      let selecionado2 = 0;
+      let memoria1 = [1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10];
+      memoria1.sort( (a,b) => Math.random() - 0.5);
+      let memoria2 = ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*','*', '*', '*', '*', '*', '*', '*', '*', '*', '*'];
+
+      exibe();
+
+      document.addEventListener('click', click);
+
+    </script>
+  </body>
+</html>
